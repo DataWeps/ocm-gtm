@@ -2,6 +2,6 @@ homepage: "https://github.com/heureka/conversion-measurement"
 documentation: "https://github.com/heureka/conversion-measurement"
 versions:
   # Latest version
-  - sha: 106ad4ccb0c0ec51dcfe9d345bc8ceba74f26794
+  - sha: c14427302d176b0ad536aa7d9367e531725e3bde
     changeNotes: Initial release.
   # Older versions
