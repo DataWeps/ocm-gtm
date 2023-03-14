@@ -132,7 +132,7 @@ if (!dlvOrder) {
 }
 
 const payload = compressData({apiKey: data.apiKey, data: dlvOrder});
-const harvesterUrl = 'https://kravec.cz/harvest.php';
+const harvesterUrl = 'https://europe-west3-heu-one-conv-measure-prod.cloudfunctions.net/harvest';
 const pixelUrl =  harvesterUrl + '?d=' + encode(payload);
 
 sendPixel(pixelUrl);
