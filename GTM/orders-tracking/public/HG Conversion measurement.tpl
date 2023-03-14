@@ -14,6 +14,7 @@ ___INFO___
   "version": 1,
   "securityGroups": [],
   "displayName": "HG Conversion measurement",
+  "categories": ["CONVERSIONS"],
   "brand": {
     "id": "brand_dummy",
     "displayName": "",
@@ -49,17 +50,17 @@ const sendPixel = require('sendPixel');
 
 function onSuccess() {
   log('Script loaded successfully.');
-  
+
   data.gtmOnSuccess();
 }
 
 function onFailure(message) {
   log('Error [HG_TRACK_ORDER]');
-  
+
   if (message) {
     log(message);
   }
-  
+
   data.gtmOnFailure();
 }
 
