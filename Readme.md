@@ -7,6 +7,9 @@ For more info see HG's private [Confluence documentations](https://heurekagroup.
 
 This directory contains multiple GTM templates.
 
+### Deployment
+To deploy a new version, a metadata.yaml needs to contains the latest commit SHA.
+
 ### Orders tracking
 
 The `public` folder contains files for GTM Template Gallery.
