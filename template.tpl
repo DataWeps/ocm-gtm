@@ -47,6 +47,19 @@ const encode = require('encodeUriComponent');
 const log = require('logToConsole');
 const copyFromDataLayer = require('copyFromDataLayer');
 const sendPixel = require('sendPixel');
+const getCookieValues = require('getCookieValues');
+
+let ocm_consent = getCookieValues('ocm_consent') || '';
+if (ocm_consent.length) {
+  ocm_consent = ocm_consent[0];
+  log('ocm_consent: ', ocm_consent);
+}
+
+let ocm_exit_data = getCookieValues('ocm_exit_data') || '';
+if (ocm_exit_data.length) {
+  ocm_exit_data = ocm_exit_data[0];
+  log('ocm_exit_data: ', ocm_exit_data);
+}
 
 function onSuccess() {
   log('Script loaded successfully.');
@@ -82,9 +95,11 @@ function renameKeys(obj) {
     name: "n",
     priceVat: "pv",
     quantity: "q",
+    ocm_consent: "oc",
+    ocm_exit_data: "oed",
   };
 
-  const result = {};
+  const result = obj.constructor == 'Array' ? [] : {};
   for (const prop in obj) {
     const renamedProp = renames[prop] || prop;
     result[renamedProp] = renameKeys(obj[prop]);
@@ -92,37 +107,23 @@ function renameKeys(obj) {
   return result;
 }
 
+function fixArrays(order) {
+  let arr = [];
+
+  for(let value in order.d.p) {
+    arr.push(order.d.p[value]);
+  }
+  order.d.p = arr;
+  return order;
+}
+
 function compressData(jsonData) {
-  return JSON.stringify(renameKeys(jsonData));
+  return JSON.stringify(fixArrays(renameKeys(jsonData)));
 }
 
 log('data =', data);
 
 var dlvOrder = copyFromDataLayer('order');
-
-/*
-if (!dlvOrder) {
-  dlvOrder = {
-    id: 111,
-    totalVat: 120000.0,
-    currency: "HUF",
-    products: [
-      {
-        itemId: 222,
-        name: "iPhone 13 Pro Max 128GB blue",
-        priceVat: 10000.0,
-        quantity: 2,
-      },
-      {
-        itemId: 333,
-        name: "MacBook Air",
-        priceVat: 100000.0,
-        quantity: 1,
-      },
-    ],
-  };
-}
-*/
 
 log('dlvOrder =', dlvOrder);
 
@@ -131,7 +132,8 @@ if (!dlvOrder) {
   return false;
 }
 
-const payload = compressData({apiKey: data.apiKey, data: dlvOrder});
+const payload = compressData({apiKey: data.apiKey, data: dlvOrder, ocm_consent: ocm_consent, ocm_exit_data: ocm_exit_data});
+log('payload', payload);
 const harvesterUrl = 'https://europe-west3-heu-one-conv-measure-prod.cloudfunctions.net/harvest';
 const pixelUrl =  harvesterUrl + '?d=' + encode(payload);
 
@@ -209,6 +211,27 @@ ___WEB_PERMISSIONS___
       "isEditedByUser": true
     },
     "isRequired": true
+  },
+  {
+    "instance": {
+      "key": {
+        "publicId": "get_cookies",
+        "versionId": "1"
+      },
+      "param": [
+        {
+          "key": "cookieAccess",
+          "value": {
+            "type": 1,
+            "string": "any"
+          }
+        }
+      ]
+    },
+    "clientAnnotations": {
+      "isEditedByUser": true
+    },
+    "isRequired": true
   }
 ]
 
@@ -220,6 +243,6 @@ scenarios: []
 
 ___NOTES___
 
-Created on 14/03/2023, 14:12:25
+Created on 21/03/2023, 14:37:27
 
 
